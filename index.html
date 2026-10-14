@@ -154,7 +154,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 <section id="guns">
   <h2>Оружие</h2>
-  <p>Каждое оружие привязано к зоне: <b>уровень</b> показывает, для какой глубины оно рассчитано. Ствол с уровнем «Плато» уже слаб в Пустошах и слишком хорош для Пещер. Самое сильное оружие модов урезано до уровня Пустошей: оно реже стреляет.</p>
+  <p>Каждое оружие привязано к зоне: <b>уровень</b> показывает, для какой глубины оно рассчитано. Ствол с уровнем «Плато» уже слаб в Пустошах и слишком хорош для Пещер. Самое сильное оружие модов урезано до уровня Пустошей, но порядок сохранён: кто был сильнее в оригинале, остаётся чуть сильнее (до +15 %).</p>
   <div class="tools">
     <input id="g-q" type="search" placeholder="Поиск по названию или моду">
     <select id="g-type"><option value="">Все типы</option></select>
@@ -240,7 +240,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 <section id="mech">
   <h2>Механики сборки</h2>
   <h3>Сила растёт с глубиной</h3>
-  <p>Весь баланс построен вокруг зон. Монстры глубже живучее (до ×2.89 в Пустошах), награды за миссии выше (до ×1.65), а оружие, патроны и броня привязаны к зоне, где их можно получить. Слишком сильное оружие модов урезано до уровня Пустошей: оно стреляет реже, но урон за выстрел сохраняет. Пробитие брони больше 100 % невозможно.</p>
+  <p>Весь баланс построен вокруг зон. Монстры глубже живучее (до ×2.89 в Пустошах), награды за миссии выше (до ×1.65), а оружие, патроны и броня привязаны к зоне, где их можно получить. Слишком сильное оружие модов урезано до уровня Пустошей: у него слабее патроны или реже выстрелы. Порядок при этом сохранён: самые мощные в оригинале стволы остаются сильнее остальных, но не больше чем на 15 % выше потолка. Пробитие брони больше 100 % невозможно.</p>
   <h3>Стоимость стрельбы</h3>
   <p>Цена патронов подогнана под доход зоны: секунда стрельбы стоит примерно столько же, сколько у ванильного оружия того же типа, умноженного на доход зоны. «Дёшево» в карточке оружия значит, что им выгодно стрелять в его зоне.</p>
   <h3>Качество предметов</h3>
@@ -324,7 +324,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="3ef8b5ca02"</script><script src="data.js?v=3ef8b5ca02"></script>
+<script>window.GUIDE_V="f3cd0342aa"</script><script src="data.js?v=f3cd0342aa"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -447,8 +447,8 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       if (s === "name") return a.name.localeCompare(b.name, "ru");
       if (s === "cost") return (a.cost ? a.cost[0] : 9) - (b.cost ? b.cost[0] : 9) || b.lvl - a.lvl;
       if (s === "pen") return (b.pen ? b.pen[0] : 0) - (a.pen ? a.pen[0] : 0) || b.lvl - a.lvl;
-      // zone first; inside it by the damage per second of a typical ammo (power x is capped per zone, so it ties)
-      return b.lvl - a.lvl || (b.dpsm || 0) - (a.dpsm || 0) || a.name.localeCompare(b.name, "ru");
+      // power (zone, then x: above the Wastes cap the original order is kept), then a typical ammo's damage per second
+      return b.lvl - a.lvl || b.x - a.x || (b.dpsm || 0) - (a.dpsm || 0) || a.name.localeCompare(b.name, "ru");
     },
     card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
       <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
