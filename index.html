@@ -154,7 +154,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 <section id="guns">
   <h2>Оружие</h2>
-  <p>Каждое оружие привязано к зоне: <b>уровень</b> показывает, для какой глубины оно рассчитано. Ствол с уровнем «Плато» уже слаб в Пустошах и слишком хорош для Пещер. Самое сильное оружие модов урезано до уровня Пустошей, но порядок сохранён: кто был сильнее в оригинале, остаётся чуть сильнее (до +15 %).</p>
+  <p>Цветная плашка — <b>зона</b>, с которой оружие можно достать. Под ней «урон уровня …» — для какой глубины рассчитана его сила: ствол с уроном уровня «Плато» уже слаб в Пустошах и слишком хорош для Пещер. Самое сильное оружие модов урезано до уровня Пустошей, но порядок сохранён: кто был сильнее в оригинале, остаётся чуть сильнее (до +15 %).</p>
   <div class="tools">
     <input id="g-q" type="search" placeholder="Поиск по названию или моду">
     <select id="g-type"><option value="">Все типы</option></select>
@@ -324,7 +324,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="004e60a199"</script><script src="data.js?v=004e60a199"></script>
+<script>window.GUIDE_V="8e548a9891"</script><script src="data.js?v=8e548a9891"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -346,6 +346,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const ZN = Object.fromEntries(G.zones.map(([k, v], i) => [k, { name: v, lvl: i + 1 }]));
+  const open = (z) => (ZN[z] ? ZN[z].lvl : 1);  // badge = the zone it can be had from (user 2026-10-15)
   const ZSHORT = ["Пещеры", "Хребет", "Плато", "Море", "Пустоши"];
   const PAGE = 60;
 
@@ -384,7 +385,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
   // legend
   $("#legend").innerHTML = [
-    ["Уровень", "Зона, для которой рассчитано оружие или патрон: " + ZSHORT.map((z, i) => zoneBadge(i + 1)).join(" ")],
+    ["Зона", "С какой зоны оружие или патрон можно достать (в магазине — с этой зоны и глубже): " + ZSHORT.map((z, i) => zoneBadge(i + 1)).join(" ")],
     ["Урон", "Урон за выстрел и в секунду по цели без брони, у предмета обычного качества. У оружия — от худшего патрона к лучшему"],
     ["Пробитие", "Какую часть брони цели игнорирует выстрел: " + G.grades.pen.join(" → ")],
     ["Оглушение", "Насколько выстрел оглушает цель: " + G.grades.stun.join(" → ")],
@@ -441,23 +442,23 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   const drawGuns = list({
     rows: () => G.guns.slice(), count: "#g-count", list: "#g-list", more: "#g-more", inputs: ["#g-q", "#g-type", "#g-sort"],
     filter: (g) => (!q("#g-q") || (g.name + " " + g.mod).toLowerCase().includes(q("#g-q")))
-      && (!$("#g-type").value || g.type === $("#g-type").value) && (!gz || !gz.size || gz.has(String(g.lvl))),
+      && (!$("#g-type").value || g.type === $("#g-type").value) && (!gz || !gz.size || gz.has(String(open(g.zone)))),
     sort: (a, b) => {
       const s = $("#g-sort").value;
       if (s === "name") return a.name.localeCompare(b.name, "ru");
       if (s === "cost") return (a.cost ? a.cost[0] : 9) - (b.cost ? b.cost[0] : 9) || b.lvl - a.lvl;
       if (s === "pen") return (b.pen ? b.pen[0] : 0) - (a.pen ? a.pen[0] : 0) || b.lvl - a.lvl;
-      // zone first; inside it absolute power (x is relative to the gun's own type: a strong revolver is no rifle)
-      return b.lvl - a.lvl || (b.pw || 0) - (a.pw || 0) || a.name.localeCompare(b.name, "ru");
+      // absolute power: DPS of a typical ammo, half in the open, half vs armor (x is relative to the gun's own type)
+      return (b.pw || 0) - (a.pw || 0) || a.name.localeCompare(b.name, "ru");
     },
     card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
       <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
-      <div class="badges">${zoneBadge(g.lvl)}${g.dps ? `<span class="b"><i>урон/с</i> <b>${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</b></span>` : ""}<span class="b"><i>темп</i> ${dot("rate", g.rate)}</span><span class="b"><i>пробитие</i> ${dot("pen", g.pen)}</span>
+      <div class="badges">${zoneBadge(open(g.zone))}${g.dps ? `<span class="b"><i>урон/с</i> <b>${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</b></span>` : ""}<span class="b"><i>темп</i> ${dot("rate", g.rate)}</span><span class="b"><i>пробитие</i> ${dot("pen", g.pen)}</span>
         <span class="b"><i>оглушение</i> ${dot("stun", g.stun)}</span><span class="b"><i>стрельба</i> ${dot("cost", g.cost, true)}</span></div>
-      <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")}${g.zone ? " · доступно с зоны «" + esc(ZN[g.zone] ? ZN[g.zone].name : g.zone) + "»" : ""}</div>
+      <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")} · урон уровня «${esc(ZSHORT[g.lvl - 1] || "")}»</div>
       <details class="more"><summary>Патроны (${g.pairs.length})</summary><div class="pairs">${g.pairs.map((p) => {
         const a = ammoById[p.ammo] || { name: p.ammo };
-        return `<div class="pair"><span class="an">${esc(a.name)}</span>${zoneBadge(p.lvl)}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span><i>проб.</i> ${dot("pen", p.pen)}</span><span><i>оглуш.</i> ${dot("stun", p.stun)}</span><span><i>стрельба</i> ${dot("cost", p.cost, true)}</span><span class="ways">${esc(p.ways.join(", "))}</span></div>`;
+        return `<div class="pair"><span class="an">${esc(a.name)}</span>${zoneBadge(open(a.zone))}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span><i>проб.</i> ${dot("pen", p.pen)}</span><span><i>оглуш.</i> ${dot("stun", p.stun)}</span><span><i>стрельба</i> ${dot("cost", p.cost, true)}</span><span class="ways">${esc(p.ways.join(", "))}</span></div>`;
       }).join("")}</div></details></div>`,
   });
   gz = chips("#g-zone", zoneChips, true, () => drawGuns(true));
@@ -485,7 +486,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       <div class="ways full">Где взять: ${esc(a.ways.join(", ") || "—")}</div>
       <details class="more"><summary>Подходит к оружию (${guns.length})</summary><div class="pairs">${guns.map((g) => {
         const p = g.pairs.find((x) => x.ammo === a.id) || {};
-        return `<div class="pair"><span class="an">${esc(g.name)}</span>${zoneBadge(g.lvl)}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span class="ways">${esc(g.type)}</span></div>`;
+        return `<div class="pair"><span class="an">${esc(g.name)}</span>${zoneBadge(open(g.zone))}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span class="ways">${esc(g.type)}</span></div>`;
       }).join("")}</div></details></div>`;
     },
   });
