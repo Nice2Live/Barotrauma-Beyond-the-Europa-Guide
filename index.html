@@ -323,7 +323,21 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script src="data.js"></script>
+<script>window.GUIDE_V="558d7b267e"</script><script src="data.js?v=558d7b267e"></script>
+<script>
+// a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
+(function () {
+  if (!window.GUIDE_V || !window.fetch) return;
+  fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then((r) => r.ok ? r.text() : "").then((v) => {
+    v = v.trim();
+    let done = "";
+    try { done = sessionStorage.getItem("guide-reload") || ""; } catch (e) {}
+    if (!v || v === window.GUIDE_V || done === v) return;
+    try { sessionStorage.setItem("guide-reload", v); } catch (e) {}
+    fetch(location.pathname, { cache: "reload" }).finally(() => location.reload());
+  }).catch(() => {});
+})();
+</script>
 <script>
 (function () {
   "use strict";
