@@ -324,7 +324,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="2b5fbd5d1d"</script><script src="data.js?v=2b5fbd5d1d"></script>
+<script>window.GUIDE_V="004e60a199"</script><script src="data.js?v=004e60a199"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -447,8 +447,8 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       if (s === "name") return a.name.localeCompare(b.name, "ru");
       if (s === "cost") return (a.cost ? a.cost[0] : 9) - (b.cost ? b.cost[0] : 9) || b.lvl - a.lvl;
       if (s === "pen") return (b.pen ? b.pen[0] : 0) - (a.pen ? a.pen[0] : 0) || b.lvl - a.lvl;
-      // power (zone, then x: above the Wastes cap the original order is kept), then a typical ammo's damage per second
-      return b.lvl - a.lvl || b.x - a.x || (b.dpsm || 0) - (a.dpsm || 0) || a.name.localeCompare(b.name, "ru");
+      // zone first; inside it absolute power (x is relative to the gun's own type: a strong revolver is no rifle)
+      return b.lvl - a.lvl || (b.pw || 0) - (a.pw || 0) || a.name.localeCompare(b.name, "ru");
     },
     card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
       <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
