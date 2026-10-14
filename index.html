@@ -91,7 +91,8 @@ details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
 .bar span { width: 18px; height: 8px; border-radius: 2px; background: var(--line); }
 .bar span.f { background: var(--accent); }
 .bar em { font-style: normal; color: var(--muted); margin-left: 6px; }
-.morebtn { display: block; margin: 16px auto; font: inherit; padding: 9px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; }
+.morebtn { display: block; margin: 16px auto; font: inherit; padding: 9px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+.morebtn[hidden] { display: none; }
 .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin: 12px 0 4px; font-size: 15px; }
 .legend .card { padding: 10px 12px; }
 .legend b { display: block; margin-bottom: 4px; }
@@ -161,7 +162,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     <span class="count" id="g-count"></span>
   </div>
   <div class="grid" id="g-list"></div>
-  <button class="morebtn" id="g-more" type="button">Показать ещё</button>
+  <button class="morebtn" id="g-more" type="button">Загрузка…</button>
 </section>
 
 <section id="ammo">
@@ -174,7 +175,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     <span class="count" id="a-count"></span>
   </div>
   <div class="grid" id="a-list"></div>
-  <button class="morebtn" id="a-more" type="button">Показать ещё</button>
+  <button class="morebtn" id="a-more" type="button">Загрузка…</button>
 </section>
 
 <section id="armor">
@@ -187,7 +188,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     <span class="count" id="r-count"></span>
   </div>
   <div class="grid" id="r-list"></div>
-  <button class="morebtn" id="r-more" type="button">Показать ещё</button>
+  <button class="morebtn" id="r-more" type="button">Загрузка…</button>
 </section>
 
 <section id="zones">
@@ -214,7 +215,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       <span class="count" id="c-count"></span>
     </div>
     <div class="grid" id="c-list"></div>
-    <button class="morebtn" id="c-more" type="button">Показать ещё</button>
+    <button class="morebtn" id="c-more" type="button">Загрузка…</button>
   </div>
 </section>
 
@@ -386,9 +387,17 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       if (cfg.sort) rows.sort(cfg.sort);
       $(cfg.count).textContent = rows.length ? rows.length + " шт." : "ничего не найдено";
       $(cfg.list).innerHTML = rows.slice(0, shown).map(cfg.card).join("");
-      if (cfg.more) $(cfg.more).hidden = rows.length <= shown;
+      if (cfg.more) {
+        const m = $(cfg.more);
+        m.hidden = rows.length <= shown;
+        if (!m.hidden && io) { io.unobserve(m); io.observe(m); }  // still on screen: load the next part
+      }
     }
-    if (cfg.more) $(cfg.more).onclick = () => { shown += PAGE * 2; draw(false); };
+    // the rest of the list loads on its own when its end scrolls into view
+    const io = cfg.more && "IntersectionObserver" in window ? new IntersectionObserver((es) => {
+      if (es.some((e) => e.isIntersecting)) { shown += PAGE * 2; draw(false); }
+    }, { rootMargin: "600px" }) : null;
+    if (cfg.more && !io) $(cfg.more).onclick = () => { shown += PAGE * 2; draw(false); };
     (cfg.inputs || []).forEach((s) => $(s).addEventListener("input", () => draw(true)));
     return draw;
   }
