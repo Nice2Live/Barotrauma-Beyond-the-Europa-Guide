@@ -324,7 +324,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="e75b2e9e32"</script><script src="data.js?v=e75b2e9e32"></script>
+<script>window.GUIDE_V="3ef8b5ca02"</script><script src="data.js?v=3ef8b5ca02"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -447,7 +447,8 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       if (s === "name") return a.name.localeCompare(b.name, "ru");
       if (s === "cost") return (a.cost ? a.cost[0] : 9) - (b.cost ? b.cost[0] : 9) || b.lvl - a.lvl;
       if (s === "pen") return (b.pen ? b.pen[0] : 0) - (a.pen ? a.pen[0] : 0) || b.lvl - a.lvl;
-      return b.x - a.x || a.name.localeCompare(b.name, "ru");
+      // zone first; inside it by the damage per second of a typical ammo (power x is capped per zone, so it ties)
+      return b.lvl - a.lvl || (b.dpsm || 0) - (a.dpsm || 0) || a.name.localeCompare(b.name, "ru");
     },
     card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
       <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
