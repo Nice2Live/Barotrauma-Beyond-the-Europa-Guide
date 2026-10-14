@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Beyond the Europa — гайд</title>
+<meta name="description" content="Гайд по сборке Barotrauma: Beyond the Europa: снаряжение, зоны, подлодки, механики.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root {
+  --bg: #e8eeee; --panel: #f6f9f9; --panel2: #edf2f2; --fg: #14201f; --muted: #57686a; --line: #c7d3d3;
+  --accent: #0d7f78; --accent-fg: #ffffff; --brass: #9a6418; --warn: #b2352c;
+  --z1: #2c8c86; --z2: #3a6fb5; --z3: #7457b8; --z4: #b2468a; --z5: #c4521f;
+  --g0: #9aa7a8; --g1: #d08a1f; --g2: #b9a21c; --g3: #4f9a3c; --g4: #157f6b;
+  --display: "Oswald", "Arial Narrow", sans-serif; --body: "PT Sans", "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1314; --panel: #131e1f; --panel2: #192627; --fg: #e2ecea; --muted: #8fa2a1; --line: #273738;
+  --accent: #37c2b2; --accent-fg: #062221; --brass: #d9a24e; --warn: #ec6d62;
+  --z1: #3fb7ad; --z2: #6a9be0; --z3: #a088e8; --z4: #e076b7; --z5: #ee8350;
+  --g0: #5d6d6e; --g1: #e09a35; --g2: #d6c041; --g3: #74c35a; --g4: #3cc3a5;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b1314; --panel: #131e1f; --panel2: #192627; --fg: #e2ecea; --muted: #8fa2a1; --line: #273738;
+  --accent: #37c2b2; --accent-fg: #062221; --brass: #d9a24e; --warn: #ec6d62;
+  --z1: #3fb7ad; --z2: #6a9be0; --z3: #a088e8; --z4: #e076b7; --z5: #ee8350;
+  --g0: #5d6d6e; --g1: #e09a35; --g2: #d6c041; --g3: #74c35a; --g4: #3cc3a5;
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+a { color: var(--accent); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: .01em; line-height: 1.2; }
+h1 { font-size: clamp(28px, 6vw, 44px); margin: 0; }
+h2 { font-size: 26px; margin: 0 0 12px; }
+h3 { font-size: 19px; margin: 22px 0 8px; }
+p, li { max-width: 72ch; }
+.top { background: linear-gradient(160deg, #06282b, #0b1b2c 60%, #1b1029); color: #e8f3f1; padding: 28px 16px 0; }
+.top .in { max-width: 1180px; margin: 0 auto; }
+.top .tagline { color: #a9c6c3; margin: 6px 0 18px; }
+.top .theme { float: right; background: none; border: 1px solid #3c5a5a; color: #cfe3e0; border-radius: 6px; padding: 4px 10px; font: inherit; font-size: 14px; cursor: pointer; }
+nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
+nav::-webkit-scrollbar { display: none; }
+nav a { color: #b8d3d0; text-decoration: none; padding: 10px 12px; border-radius: 8px 8px 0 0; white-space: nowrap; font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: .03em; text-transform: uppercase; }
+nav a:hover { color: #fff; }
+nav a.on { background: var(--bg); color: var(--fg); }
+main { max-width: 1180px; margin: 0 auto; padding: 22px 16px 60px; }
+section { display: none; }
+section.on { display: block; }
+.lead { font-size: 18px; color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 14px 0; }
+.cols .card h3 { margin-top: 0; }
+.note { border-left: 3px solid var(--brass); padding: 8px 12px; background: var(--panel2); border-radius: 0 8px 8px 0; margin: 12px 0; max-width: 80ch; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 10px; }
+.tools input, .tools select { font: inherit; font-size: 15px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--fg); min-width: 0; }
+.tools input { flex: 1 1 200px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 5px 10px; border-radius: 999px; cursor: pointer; }
+.chip.on { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.count { color: var(--muted); font-size: 14px; margin-left: auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; }
+@media (max-width: 420px) { .grid { grid-template-columns: 1fr; } }
+.item { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; grid-template-columns: 56px 1fr; gap: 4px 12px; align-content: start; }
+.item .ic { width: 56px; height: 56px; display: grid; place-items: center; background: var(--panel2); border-radius: 8px; grid-row: span 3; }
+.item .ic img { max-width: 50px; max-height: 50px; image-rendering: auto; }
+.item .nm { font-weight: 700; line-height: 1.25; }
+.item .md { color: var(--muted); font-size: 13px; }
+.badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.b { font-size: 12.5px; padding: 2px 8px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); white-space: nowrap; }
+.b i { font-style: normal; color: var(--muted); }
+.zb { color: #fff; border: none; font-weight: 700; }
+.z1 { background: var(--z1); } .z2 { background: var(--z2); } .z3 { background: var(--z3); } .z4 { background: var(--z4); } .z5 { background: var(--z5); }
+.gd { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+.full { grid-column: 1 / -1; }
+.ways { font-size: 13px; color: var(--muted); }
+details.more { grid-column: 1 / -1; margin-top: 6px; }
+details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+.pairs { display: grid; gap: 4px; margin-top: 6px; font-size: 14px; }
+.pair { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 6px 8px; background: var(--panel2); border-radius: 6px; }
+.pair .an { font-weight: 700; flex: 1 1 100%; }
+.bars { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 13px; margin-top: 6px; grid-column: 1 / -1; }
+.bar { display: flex; gap: 3px; align-items: center; }
+.bar span { width: 18px; height: 8px; border-radius: 2px; background: var(--line); }
+.bar span.f { background: var(--accent); }
+.bar em { font-style: normal; color: var(--muted); margin-left: 6px; }
+.morebtn { display: block; margin: 16px auto; font: inherit; padding: 9px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin: 12px 0 4px; font-size: 14px; }
+.legend .card { padding: 10px 12px; }
+.legend b { display: block; margin-bottom: 4px; }
+.zonebar { display: grid; grid-template-columns: repeat(5, 1fr); border-radius: 10px; overflow: hidden; margin: 14px 0; }
+.zonebar div { padding: 10px 8px; color: #fff; font-size: 13px; line-height: 1.3; }
+.zonebar b { display: block; font-family: var(--display); font-size: 15px; font-weight: 500; }
+@media (max-width: 640px) { .zonebar { grid-template-columns: 1fr; } }
+.spoiler { text-align: center; padding: 30px 16px; }
+.spoiler button { font: inherit; padding: 9px 18px; border-radius: 8px; border: none; background: var(--warn); color: #fff; cursor: pointer; }
+.sub { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.sub img { width: 100%; aspect-ratio: 16/7; object-fit: contain; background: #0d1a1b; display: block; }
+.sub .bd { padding: 12px; display: grid; gap: 6px; }
+.sub .ds { font-size: 14px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sub .ds.open { -webkit-line-clamp: unset; }
+table.plain { border-collapse: collapse; font-size: 15px; margin: 8px 0; }
+table.plain td, table.plain th { border-bottom: 1px solid var(--line); padding: 6px 12px 6px 0; text-align: left; vertical-align: top; }
+.mods { columns: 3 260px; column-gap: 18px; font-size: 14px; padding-left: 18px; }
+.mods li { break-inside: avoid; margin-bottom: 3px; }
+.tag { font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+footer { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 16px 40px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <button class="theme" id="theme" type="button">Тема</button>
+  <h1>Barotrauma: Beyond the Europa</h1>
+  <p class="tagline">Гайд по кооперативной сборке: снаряжение, зоны, подлодки и механики</p>
+  <nav id="nav">
+    <a href="#start">Начало</a><a href="#guns">Оружие</a><a href="#ammo">Патроны</a><a href="#armor">Броня</a>
+    <a href="#zones">Зоны и монстры</a><a href="#subs">Подлодки</a><a href="#mech">Механики</a><a href="#med">Медицина</a>
+    <a href="#talents">Таланты</a><a href="#world">Мир</a><a href="#mods">Моды</a>
+  </nav>
+</div></header>
+<main>
+
+<section id="start">
+  <h2>Что это за сборка</h2>
+  <p class="lead">Beyond the Europa — закрытая кооперативная сборка Barotrauma на основе более чем 150 модов: новое оружие и броня, фракции и миссии, монстры, подлодки, расширенная медицина (Neurotrauma) и переработанный баланс, где сила снаряжения растёт вместе с глубиной.</p>
+  <div class="cols">
+    <div class="card"><h3>Установка</h3>
+      <ol>
+        <li>Нужна купленная Barotrauma в Steam.</li>
+        <li>Возьми у хоста загрузчик <b>Beyond-the-Europa-Setup.exe</b> и запусти его.</li>
+        <li>Загрузчик сам найдёт игру, нажми <b>«Установить»</b>. Он скачает сборку и создаст ярлык на рабочем столе.</li>
+        <li>Играй через ярлык: он включает сборку и запускает игру через Steam.</li>
+      </ol></div>
+    <div class="card"><h3>Обновления</h3>
+      <p>Проверяются сами при каждом запуске. Если вышло обновление, игра закроется, загрузчик скачает только изменённые части и запустит игру снова.</p>
+      <p>Если загрузчик пишет, что нужен новый загрузчик, возьми у хоста свежий файл.</p></div>
+    <div class="card"><h3>Ванильная игра</h3>
+      <p>Сборка не ломает обычную игру. Чтобы вернуться в ваниль, набери в консоли (F3) <code>bbe_mode vanilla</code> и перезапусти игру. Обратно — ярлык сборки на рабочем столе.</p></div>
+  </div>
+  <h3>Как читать этот гайд</h3>
+  <p>Числа из файлов игры мало что говорят игроку, поэтому почти везде они переведены в понятные оценки. Чем «теплее» точка у оценки, тем лучше.</p>
+  <div class="legend" id="legend"></div>
+  <div class="note">Оценки посчитаны по файлам сборки, а не замерены в бою: дальность, разброс, отдача и время перезарядки в них не учтены. Таблицы обновляются вместе с каждым релизом.</div>
+</section>
+
+<section id="guns">
+  <h2>Оружие</h2>
+  <p>Каждое оружие привязано к зоне: <b>уровень</b> показывает, для какой глубины оно рассчитано. Ствол с уровнем «Плато» уже слаб в Пустошах и слишком хорош для Пещер. Самое сильное оружие модов урезано до уровня Пустошей: оно реже стреляет.</p>
+  <div class="tools">
+    <input id="g-q" type="search" placeholder="Поиск по названию или моду">
+    <select id="g-type"><option value="">Все типы</option></select>
+    <select id="g-sort"><option value="lvl">Сначала сильные</option><option value="name">По названию</option><option value="cost">Сначала дешёвые в стрельбе</option><option value="pen">По пробитию</option></select>
+    <div class="chips" id="g-zone"></div>
+    <span class="count" id="g-count"></span>
+  </div>
+  <div class="grid" id="g-list"></div>
+  <button class="morebtn" id="g-more" type="button">Показать ещё</button>
+</section>
+
+<section id="ammo">
+  <h2>Патроны</h2>
+  <p>Патрон тоже имеет уровень: дешёвые патроны ранних зон слабее. Пробитие и оглушение указаны для лучшего ствола под этот патрон.</p>
+  <div class="tools">
+    <input id="a-q" type="search" placeholder="Поиск по патрону, моду или оружию">
+    <select id="a-fam"><option value="">Все семейства</option></select>
+    <div class="chips" id="a-zone"></div>
+    <span class="count" id="a-count"></span>
+  </div>
+  <div class="grid" id="a-list"></div>
+  <button class="morebtn" id="a-more" type="button">Показать ещё</button>
+</section>
+
+<section id="armor">
+  <h2>Броня</h2>
+  <p>Шкалы показывают, сколько урона каждого типа снимает предмет: голова и тело считаются вместе, взята лучшая защита. Эффекты защиты от разных предметов складываются с убывающей отдачей (см. «Механики»).</p>
+  <div class="tools">
+    <input id="r-q" type="search" placeholder="Поиск по названию или моду">
+    <div class="chips" id="r-slot"></div>
+    <select id="r-sort"><option value="sum">Сначала самые защищающие</option><option value="name">По названию</option><option value="press">Защита от давления</option></select>
+    <span class="count" id="r-count"></span>
+  </div>
+  <div class="grid" id="r-list"></div>
+  <button class="morebtn" id="r-more" type="button">Показать ещё</button>
+</section>
+
+<section id="zones">
+  <h2>Зоны и монстры</h2>
+  <p>Европа делится на пять зон. Чем глубже, тем живучее монстры и тем больше платят за миссии.</p>
+  <div class="zonebar" id="zonebar"></div>
+  <table class="plain">
+    <tr><th>Зона</th><th>Здоровье монстров</th><th>Награды за миссии</th></tr>
+    <tr><td>Холодные пещеры</td><td>×1</td><td>×1</td></tr>
+    <tr><td>Хребет Европы</td><td>×1.24</td><td>×1.2</td></tr>
+    <tr><td>Афотическое плато</td><td>×1.64</td><td>×1.35</td></tr>
+    <tr><td>Великое море</td><td>×2.52</td><td>×1.5</td></tr>
+    <tr><td>Гидротермальные пустоши</td><td>×2.89</td><td>×1.65</td></tr>
+  </table>
+  <h3>Монстры</h3>
+  <div id="c-gate" class="card spoiler">
+    <p>Список монстров по зонам — спойлер: тут есть боссы глубоких зон.</p>
+    <button type="button" id="c-open">Показать монстров</button>
+  </div>
+  <div id="c-wrap" hidden>
+    <div class="tools">
+      <input id="c-q" type="search" placeholder="Поиск по имени или моду">
+      <div class="chips" id="c-zone"></div>
+      <span class="count" id="c-count"></span>
+    </div>
+    <div class="grid" id="c-list"></div>
+    <button class="morebtn" id="c-more" type="button">Показать ещё</button>
+  </div>
+</section>
+
+<section id="subs">
+  <h2>Подлодки</h2>
+  <p>Подлодки продаются на верфях по четырём уровням (<b>лицензиям</b>). Первая лицензия есть с начала кампании, следующие дают особые задания, которые предлагают верфи. Лицензия 4 — бой с одним из боссов Пустошей и репутация 50 у фракции станции.</p>
+  <ul>
+    <li>На каждой верфи по 2 лодки каждого уровня. Ассортимент меняется каждые 6 раундов.</li>
+    <li>Старые лодки остаются у экипажа. Продать ненужную можно за 50 % цены (кнопка в терминале смены подлодки).</li>
+    <li>Кредитов нет: лодку нужно оплатить сразу.</li>
+    <li>Уровень лодки ограничивает её улучшения.</li>
+  </ul>
+  <div class="tools">
+    <input id="s-q" type="search" placeholder="Поиск по названию">
+    <div class="chips" id="s-tier"></div>
+    <span class="count" id="s-count"></span>
+  </div>
+  <div class="grid" id="s-list"></div>
+</section>
+
+<section id="mech">
+  <h2>Механики сборки</h2>
+  <h3>Сила растёт с глубиной</h3>
+  <p>Весь баланс построен вокруг зон. Монстры глубже живучее (до ×2.89 в Пустошах), награды за миссии выше (до ×1.65), а оружие, патроны и броня привязаны к зоне, где их можно получить. Слишком сильное оружие модов урезано до уровня Пустошей: оно стреляет реже, но урон за выстрел сохраняет. Пробитие брони больше 100 % невозможно.</p>
+  <h3>Стоимость стрельбы</h3>
+  <p>Цена патронов подогнана под доход зоны: секунда стрельбы стоит примерно столько же, сколько у ванильного оружия того же типа, умноженного на доход зоны. «Дёшево» в карточке оружия значит, что им выгодно стрелять в его зоне.</p>
+  <h3>Качество предметов</h3>
+  <p>Пять уровней: обычное → хорошее → отличное → <b>шедевр</b> (3) → <b>легендарное</b> (4) → <b>мифическое</b> (5). Каждый уровень даёт +3 % урона. Мифическое оружие с мифическими патронами бьёт примерно в 1.32 раза сильнее обычного.</p>
+  <ul>
+    <li>Таланты и случайные бонусы крафта поднимают качество максимум до шедевра.</li>
+    <li>Легендарное качество крафтится при навыке <b>150</b>, мифическое — при <b>215</b>.</li>
+  </ul>
+  <h3>Бонусы складываются с убывающей отдачей</h3>
+  <p>Проценты от талантов, снаряжения и эффектов складываются, но после порога каждый следующий процент даёт всё меньше, и предел никогда не достигается. Одиночные таланты работают как написано.</p>
+  <table class="plain">
+    <tr><th>Бонус</th><th>Считается полностью до</th><th>Предел</th></tr>
+    <tr><td>Сопротивление урону и болезням</td><td>25 %</td><td>60 % (один предмет с полным иммунитетом работает)</td></tr>
+    <tr><td>Урон</td><td>25 %</td><td>75 %</td></tr>
+    <tr><td>Скорость передвижения</td><td>20 %</td><td>50 %</td></tr>
+    <tr><td>Скорость атаки</td><td>20 %</td><td>50 %</td></tr>
+    <tr><td>Здоровье</td><td>20 %</td><td>50 %</td></tr>
+    <tr><td>Скорость работы (ремонт, крафт)</td><td>25 %</td><td>75 %</td></tr>
+    <tr><td>Деньги за миссии</td><td>20 %</td><td>60 %</td></tr>
+    <tr><td>Скидки в магазинах</td><td>15 %</td><td>40 %</td></tr>
+  </table>
+  <p>Скидки от талантов разных членов экипажа складываются (в ванили работала только самая большая) — тоже с убывающей отдачей. Бонусы снаряжения, пока оно в руках (прицелы, компенсаторы, «боевые» стволы), ограничены.</p>
+  <h3>Чертежи</h3>
+  <p>Позднее оружие и броню модов (с Плато и глубже) нельзя скрафтить сразу. Сначала нужен <b>чертёж</b>: найди или купи один экземпляр предмета, изучи его в фабрикаторе (вкладка «Чертежи»), и рецепт откроется для всего экипажа навсегда. Чертежи продаются в магазинах, где продаётся сам предмет, по одному.</p>
+  <h3>Быстрые переходы между раундами</h3>
+  <p>Подлодка не выгружается между раундами, а следующая станция строится заранее, пока вы в пути. Поэтому загрузки между уровнями короткие. Если станция не успела построиться, игра загрузит её обычным способом.</p>
+  <h3>Экономика миссий</h3>
+  <p>Награда за охоту на монстров зависит от их суммарного здоровья, остальные миссии выровнены по ванильным диапазонам. В глубоких зонах платят больше, и это рассчитано так, чтобы покрывать дорожающие патроны.</p>
+</section>
+
+<section id="med">
+  <h2>Медицина</h2>
+  <p>Медицина в сборке — <b>Neurotrauma</b> с дополнениями. Это не «аптечка лечит всё»: переломы, кровотечения, инфекции, давление крови, органы и операции.</p>
+  <div class="cols">
+    <div class="card"><h3>Основы</h3>
+      <ul>
+        <li>Открой окно здоровья (по умолчанию <b>H</b>): у каждой части тела свои травмы.</li>
+        <li>Кровотечение — бинты и жгуты, потом переливание крови.</li>
+        <li>Переломы — шина или гипс, сложные случаи — операция.</li>
+        <li>Без медика долгие погружения опасны: заведите медика или двух.</li>
+      </ul></div>
+    <div class="card"><h3>Подсказки NT Assistent</h3>
+      <p>Числа и подсказки по лечению над людьми и в окне здоровья видны, только если надеты или в руках <b>медицинские очки</b> (любой предмет с медицинским HUD) или установлен медицинский кибер-глаз.</p></div>
+    <div class="card"><h3>Глаза (NT Eyes)</h3>
+      <p><b>Глаз</b> — орган, его меняют операцией: живые глаза, глаза монстров, пластиковые и кибер-глаза. <b>Линза</b> — вставка в кибер-глаз или улучшенный глаз:</p>
+      <ul>
+        <li>медицинская: +10 к медицине и полоски здоровья;</li>
+        <li>электрическая: +10 к электрике и видна проводка;</li>
+        <li>ночное зрение;</li>
+        <li>тепловизор: +10 к оружию.</li>
+      </ul>
+      <p><b>Медицинский кибер-глаз</b> (только в этой сборке) — кибер-глаз со встроенным NT Assistent. Крафт: кибер-глаз + медицинские линзы + FPGA, медицина 80 и электрика 50.</p></div>
+    <div class="card"><h3>Кибернетика и пересадки</h3>
+      <p>Кибер-органы и конечности (NT Cybernetics), пересадка органов (NT Grafting) — пересадки работают без отдельных талантов.</p></div>
+  </div>
+</section>
+
+<section id="talents">
+  <h2>Таланты</h2>
+  <p>Деревья талантов всех профессий переработаны: у каждой ветки понятная тема, название таланта говорит, что он делает, бонусы — небольшие проценты вместо фиксированных денег.</p>
+  <div class="cols" id="t-list"></div>
+</section>
+
+<section id="world">
+  <h2>Мир</h2>
+  <p class="lead">Европа, спутник Юпитера. Под километрами льда — океан, где человечество выживает на подводных станциях, а между станциями ходят такие, как вы.</p>
+  <div class="cols">
+    <div class="card"><h3>Коалиция</h3><p>Власть Европы: военные станции, патрули, порядок любой ценой. Платит надёжно, но не прощает предательства.</p></div>
+    <div class="card"><h3>Сепаратисты</h3><p>Борцы с Коалицией за независимость колоний. Своё оружие, свои базы и свои задания — от снабжения до диверсий.</p></div>
+    <div class="card"><h3>Станции и торговцы</h3><p>Шахтёрские колонии, города, исследовательские базы и аванпосты. Репутация у фракции станции меняет цены и открывает задания.</p></div>
+    <div class="card"><h3>Глубины</h3><p>Чем ниже, тем древнее и опаснее жизнь. Гидротермальные пустоши — край известного мира, и мало кто возвращается оттуда.</p></div>
+  </div>
+  <div class="note">Раздел в работе: подробная история и фракции появятся позже.</div>
+</section>
+
+<section id="mods">
+  <h2>Моды и авторы</h2>
+  <p>Сборка стоит на работе авторов модов из Мастерской Steam. Спасибо им! Ссылки ведут на страницы модов.</p>
+  <ul class="mods" id="m-list"></ul>
+</section>
+
+</main>
+<footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  const G = window.GUIDE;
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const ZN = Object.fromEntries(G.zones.map(([k, v], i) => [k, { name: v, lvl: i + 1 }]));
+  const ZSHORT = ["Пещеры", "Хребет", "Плато", "Море", "Пустоши"];
+  const PAGE = 60;
+
+  // theme
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("bbe-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+  $("#theme").onclick = () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("bbe-theme", root.dataset.theme); } catch (e) {}
+  };
+
+  // routing
+  function route() {
+    const id = (location.hash || "#start").slice(1);
+    const sec = document.getElementById(id) && document.getElementById(id).tagName === "SECTION" ? id : "start";
+    document.querySelectorAll("main section").forEach((s) => s.classList.toggle("on", s.id === sec));
+    document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + sec));
+    const on = document.querySelector("#nav a.on");
+    if (on) on.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+  addEventListener("hashchange", () => { route(); scrollTo(0, 0); });
+  route();
+
+  // grades: index 0 = worst for "good" scales; color by position
+  function dot(kind, g, invert) {
+    if (!g) return '<span class="gd" style="background:var(--g0)"></span>—';
+    const n = G.grades[kind].length - 1;
+    let pos = n ? g[0] / n : 0;
+    if (invert) pos = 1 - pos;
+    const c = g[0] === 0 && !invert ? "g0" : "g" + Math.max(1, Math.round(pos * 4));
+    return `<span class="gd" style="background:var(--${c})"></span>${esc(g[1])}`;
+  }
+  const zoneBadge = (lvl) => `<span class="b zb z${lvl}">${ZSHORT[lvl - 1]}</span>`;
+  const img = (f) => f ? `<img loading="lazy" src="icons/${esc(f)}" alt="">` : "";
+
+  // legend
+  $("#legend").innerHTML = [
+    ["Уровень", "Зона, для которой рассчитано оружие или патрон: " + ZSHORT.map((z, i) => zoneBadge(i + 1)).join(" ")],
+    ["Пробитие", "Какую часть брони цели игнорирует выстрел: " + G.grades.pen.join(" → ")],
+    ["Оглушение", "Насколько выстрел оглушает цель: " + G.grades.stun.join(" → ")],
+    ["Темп", "Выстрелов в секунду: " + G.grades.rate.join(" → ")],
+    ["Стрельба", "Цена секунды стрельбы против нормы для зоны: " + G.grades.cost.join(" → ")],
+    ["Защита брони", "Какую часть урона снимает: " + G.grades.prot.join(" → ")],
+  ].map(([t, d]) => `<div class="card"><b>${t}</b>${d}</div>`).join("");
+
+  // generic list with filters and paging
+  function list(cfg) {
+    let shown = PAGE;
+    const state = cfg.state || {};
+    function draw(reset) {
+      if (reset) shown = PAGE;
+      const rows = cfg.rows().filter(cfg.filter);
+      if (cfg.sort) rows.sort(cfg.sort);
+      $(cfg.count).textContent = rows.length ? rows.length + " шт." : "ничего не найдено";
+      $(cfg.list).innerHTML = rows.slice(0, shown).map(cfg.card).join("");
+      if (cfg.more) $(cfg.more).hidden = rows.length <= shown;
+    }
+    if (cfg.more) $(cfg.more).onclick = () => { shown += PAGE * 2; draw(false); };
+    (cfg.inputs || []).forEach((s) => $(s).addEventListener("input", () => draw(true)));
+    return draw;
+  }
+  function chips(sel, items, multi, onChange) {
+    const box = $(sel);
+    const on = new Set();
+    box.innerHTML = items.map(([v, l]) => `<button type="button" class="chip" data-v="${esc(v)}">${esc(l)}</button>`).join("");
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest(".chip"); if (!b) return;
+      const v = b.dataset.v;
+      if (on.has(v)) on.delete(v); else { if (!multi) on.clear(); on.add(v); }
+      box.querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", on.has(c.dataset.v)));
+      onChange();
+    });
+    return on;
+  }
+  const zoneChips = G.zones.map(([k], i) => [String(i + 1), ZSHORT[i]]);
+  const q = (sel) => $(sel).value.trim().toLowerCase();
+
+  // guns
+  const ammoById = Object.fromEntries(G.ammo.map((a) => [a.id, a]));
+  const types = [...new Set(G.guns.map((g) => g.type))].sort();
+  $("#g-type").innerHTML += types.map((t) => `<option>${esc(t)}</option>`).join("");
+  let gz;
+  const drawGuns = list({
+    rows: () => G.guns.slice(), count: "#g-count", list: "#g-list", more: "#g-more", inputs: ["#g-q", "#g-type", "#g-sort"],
+    filter: (g) => (!q("#g-q") || (g.name + " " + g.mod).toLowerCase().includes(q("#g-q")))
+      && (!$("#g-type").value || g.type === $("#g-type").value) && (!gz || !gz.size || gz.has(String(g.lvl))),
+    sort: (a, b) => {
+      const s = $("#g-sort").value;
+      if (s === "name") return a.name.localeCompare(b.name, "ru");
+      if (s === "cost") return (a.cost ? a.cost[0] : 9) - (b.cost ? b.cost[0] : 9) || b.lvl - a.lvl;
+      if (s === "pen") return (b.pen ? b.pen[0] : 0) - (a.pen ? a.pen[0] : 0) || b.lvl - a.lvl;
+      return b.x - a.x || a.name.localeCompare(b.name, "ru");
+    },
+    card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
+      <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
+      <div class="badges">${zoneBadge(g.lvl)}<span class="b"><i>темп</i> ${dot("rate", g.rate)}</span><span class="b"><i>пробитие</i> ${dot("pen", g.pen)}</span>
+        <span class="b"><i>оглушение</i> ${dot("stun", g.stun)}</span><span class="b"><i>стрельба</i> ${dot("cost", g.cost, true)}</span></div>
+      <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")}${g.zone ? " · доступно с зоны «" + esc(ZN[g.zone] ? ZN[g.zone].name : g.zone) + "»" : ""}</div>
+      <details class="more"><summary>Патроны (${g.pairs.length})</summary><div class="pairs">${g.pairs.map((p) => {
+        const a = ammoById[p.ammo] || { name: p.ammo };
+        return `<div class="pair"><span class="an">${esc(a.name)}</span>${zoneBadge(p.lvl)}<span><i>проб.</i> ${dot("pen", p.pen)}</span><span><i>оглуш.</i> ${dot("stun", p.stun)}</span><span><i>стрельба</i> ${dot("cost", p.cost, true)}</span><span class="ways">${esc(p.ways.join(", "))}</span></div>`;
+      }).join("")}</div></details></div>`,
+  });
+  gz = chips("#g-zone", zoneChips, true, () => drawGuns(true));
+  drawGuns(true);
+
+  // ammo
+  const gunById = Object.fromEntries(G.guns.map((g) => [g.id, g]));
+  $("#a-fam").innerHTML += [...new Set(G.ammo.map((a) => a.family))].sort().map((f) => `<option>${esc(f)}</option>`).join("");
+  let az;
+  const drawAmmo = list({
+    rows: () => G.ammo.slice(), count: "#a-count", list: "#a-list", more: "#a-more", inputs: ["#a-q", "#a-fam"],
+    filter: (a) => {
+      const s = q("#a-q");
+      const lvl = ZN[a.zone] ? ZN[a.zone].lvl : 1;
+      return (!s || (a.name + " " + a.mod + " " + a.guns.map((i) => gunById[i] ? gunById[i].name : "").join(" ")).toLowerCase().includes(s))
+        && (!$("#a-fam").value || a.family === $("#a-fam").value) && (!az || !az.size || az.has(String(lvl)));
+    },
+    sort: (a, b) => a.name.localeCompare(b.name, "ru"),
+    card: (a) => {
+      const lvl = ZN[a.zone] ? ZN[a.zone].lvl : 1;
+      const guns = a.guns.map((i) => gunById[i]).filter(Boolean);
+      return `<div class="item"><div class="ic">${img(a.icon)}</div>
+      <div class="nm">${esc(a.name)}</div><div class="md">${esc(a.family)} · ${esc(a.mod)}</div>
+      <div class="badges">${zoneBadge(lvl)}<span class="b"><i>пробитие</i> ${dot("pen", a.pen)}</span><span class="b"><i>оглушение</i> ${dot("stun", a.stun)}</span><span class="b"><i>стрельба</i> ${dot("cost", a.cost, true)}</span></div>
+      <div class="ways full">Где взять: ${esc(a.ways.join(", ") || "—")}</div>
+      <details class="more"><summary>Подходит к оружию (${guns.length})</summary><div class="pairs">${guns.map((g) => `<div class="pair"><span class="an">${esc(g.name)}</span>${zoneBadge(g.lvl)}<span class="ways">${esc(g.type)}</span></div>`).join("")}</div></details></div>`;
+    },
+  });
+  az = chips("#a-zone", zoneChips, true, () => drawAmmo(true));
+  drawAmmo(true);
+
+  // armor
+  const SLOT = { head: "Голова", outer: "Верхняя одежда", inner: "Нижняя одежда", other: "Другое" };
+  const DMG = ["огнестрел", "порезы", "укусы", "удары", "взрывы", "ожоги"];
+  const protSum = (r) => Object.values(r.prot).reduce((s, g) => s + g[0], 0);
+  let rs;
+  const drawArmor = list({
+    rows: () => G.armor.slice(), count: "#r-count", list: "#r-list", more: "#r-more", inputs: ["#r-q", "#r-sort"],
+    filter: (r) => (!q("#r-q") || (r.name + " " + r.mod).toLowerCase().includes(q("#r-q"))) && (!rs || !rs.size || rs.has(r.slot)),
+    sort: (a, b) => {
+      const s = $("#r-sort").value;
+      if (s === "name") return a.name.localeCompare(b.name, "ru");
+      if (s === "press") return b.pressure - a.pressure || protSum(b) - protSum(a);
+      return protSum(b) - protSum(a) || a.name.localeCompare(b.name, "ru");
+    },
+    card: (r) => `<div class="item"><div class="ic">${img(r.icon)}</div>
+      <div class="nm">${esc(r.name)}</div><div class="md">${esc(SLOT[r.slot] || r.slot)} · ${esc(r.mod)}</div>
+      <div class="badges">${r.pressure ? `<span class="b"><i>давление</i> до ~${r.pressure} м</span>` : ""}</div>
+      <div class="bars">${DMG.filter((d) => r.prot[d]).map((d) => {
+        const g = r.prot[d];
+        return `<span>${d}</span><span class="bar">${[1, 2, 3, 4].map((i) => `<span class="${g[0] >= i ? "f" : ""}"></span>`).join("")}<em>${esc(g[1])}</em></span>`;
+      }).join("") || '<span class="ways">не защищает от урона</span>'}</div>
+      <div class="ways full">Где взять: ${esc(r.ways.join(", ") || "—")}</div></div>`,
+  });
+  rs = chips("#r-slot", Object.entries(SLOT), true, () => drawArmor(true));
+  drawArmor(true);
+
+  // zones + creatures
+  $("#zonebar").innerHTML = G.zones.map(([k, v], i) => `<div class="z${i + 1}"><b>${i + 1}. ${esc(v)}</b>${["начало пути", "первые угрозы", "середина кампании", "опасные глубины", "край известного мира"][i]}</div>`).join("");
+  const ZALL = Object.fromEntries([...G.zones.map(([k], i) => [k, i + 1]), ["end", 6]]);
+  let cz;
+  const drawCreatures = list({
+    rows: () => G.creatures.slice(), count: "#c-count", list: "#c-list", more: "#c-more", inputs: ["#c-q"],
+    filter: (c) => (!q("#c-q") || (c.name + " " + c.mod).toLowerCase().includes(q("#c-q"))) && (!cz || !cz.size || c.zones.some((z) => cz.has(String(ZALL[z])))),
+    card: (c) => `<div class="item" style="grid-template-columns:1fr"><div class="nm">${esc(c.name)}</div><div class="md">${esc(c.mod)}</div>
+      <div class="badges"><span class="b"><i>размер</i> ${dot("hp", c.hp, true)}</span><span class="b"><i>удар</i> ${dot("hit", c.hit, true)}</span></div>
+      <div class="badges">${c.zones.map((z) => ZALL[z] <= 5 ? zoneBadge(ZALL[z]) : '<span class="b">Конец пути</span>').join("")}</div></div>`,
+  });
+  $("#c-open").onclick = () => { $("#c-gate").hidden = true; $("#c-wrap").hidden = false; drawCreatures(true); };
+  cz = chips("#c-zone", zoneChips, true, () => drawCreatures(true));
+
+  // subs
+  const TIER = ["", "Стартовый", "Улучшенный", "Продвинутый", "Экспериментальный"];
+  const CLS = { Scout: "Разведка", Attack: "Атака", Transport: "Транспорт", DeepDiver: "Глубоководная", Undefined: "—" };
+  let st;
+  const drawSubs = list({
+    rows: () => G.subs.slice(), count: "#s-count", list: "#s-list", inputs: ["#s-q"],
+    filter: (s) => (!q("#s-q") || s.name.toLowerCase().includes(q("#s-q"))) && (!st || !st.size || st.has(String(s.tier))),
+    card: (s) => {
+      const tur = Object.entries(s.turrets || {}).map(([k, n]) => `${esc(k)} ×${n}`).join(", ");
+      return `<div class="sub">${s.img ? `<img loading="lazy" src="subs/${esc(s.img)}" alt="">` : ""}<div class="bd">
+        <div class="nm" style="font-weight:700">${esc(s.name)}</div>
+        <div class="badges"><span class="b zb z${Math.min(5, s.tier + 1)}">Лицензия ${s.tier}: ${TIER[s.tier]}</span><span class="b">${s.price.toLocaleString("ru")} мк</span><span class="b">${esc(CLS[s.cls] || s.cls || "")}</span>
+          ${s.crew ? `<span class="b"><i>экипаж</i> ${s.crew[0]}–${s.crew[1]}</span>` : ""}${s.cargo ? `<span class="b"><i>грузовых мест</i> ${s.cargo}</span>` : ""}
+          ${s.size && s.size[0] ? `<span class="b">${Math.round(s.size[0])}×${Math.round(s.size[1])} м</span>` : ""}</div>
+        ${tur ? `<div class="ways">Орудия: ${tur}</div>` : ""}
+        ${s.desc ? `<div class="ds" onclick="this.classList.toggle('open')">${esc(s.desc)}</div>` : ""}</div></div>`;
+    },
+  });
+  st = chips("#s-tier", [1, 2, 3, 4].map((t) => [String(t), "Лицензия " + t]), true, () => drawSubs(true));
+  drawSubs(true);
+
+  // talents
+  const JOBS = [["captain", "Капитан"], ["engineer", "Инженер"], ["mechanic", "Механик"], ["medicaldoctor", "Медик"], ["securityofficer", "Охранник"], ["assistant", "Ассистент"]];
+  $("#t-list").innerHTML = JOBS.map(([f, n]) => `<a class="card" href="talents/${f}.html" style="text-decoration:none;color:inherit"><h3 style="margin:0">${n}</h3><span class="ways">Все ветки и таланты →</span></a>`).join("");
+
+  // mods
+  $("#m-list").innerHTML = G.mods.map((m) => {
+    const name = esc(m.name);
+    const link = m.ws ? `<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=${esc(m.ws)}" rel="noopener">${name}</a>` : name;
+    return `<li>${link}${m.own ? '<span class="tag">сборка</span>' : ""}${m.optional ? '<span class="tag">по желанию</span>' : ""}</li>`;
+  }).join("");
+
+  $("#stamp").textContent = G.stamp || "";
+})();
+</script>
+</body>
+</html>

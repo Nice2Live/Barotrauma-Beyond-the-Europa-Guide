@@ -1,0 +1,214 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>Таланты инженера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap">
+<style>
+/* Layout: one column of branches, each a vertical ladder of stages (the order is the real unlock order); nodes side by side within a stage */
+:root {
+  --bg: #e9eeed; --panel: #f7f9f8; --fg: #17201f; --muted: #5b6866; --line: #c9d3d1;
+  --brass: #9a6418; --keep: #6c7a78; --rework: #b3700f; --mine: #13806b; --eng: #5a55b8; --warn: #b23a32;
+  --display: "Oswald", "Arial Narrow", sans-serif; --body: "PT Sans", "Segoe UI", sans-serif; --mono: "PT Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1615; --panel: #172220; --fg: #e3ebe9; --muted: #93a3a0; --line: #2a3936;
+  --brass: #d9a24e; --keep: #8a9b98; --rework: #e5a13a; --mine: #3cc3a5; --eng: #9d98f0; --warn: #ec6d62; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1615; --panel: #172220; --fg: #e3ebe9; --muted: #93a3a0; --line: #2a3936;
+  --brass: #d9a24e; --keep: #8a9b98; --rework: #e5a13a; --mine: #3cc3a5; --eng: #9d98f0; --warn: #ec6d62; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 48px; display: grid; gap: 28px; }
+h1, h2 { font-family: var(--display); font-weight: 600; letter-spacing: .02em; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(28px, 6vw, 40px); }
+h2 { font-size: 24px; }
+.eyebrow { font: 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); }
+nav { display: flex; flex-wrap: wrap; gap: 8px; }
+nav a { font: 14px var(--display); letter-spacing: .04em; color: var(--fg); text-decoration: none; padding: 6px 12px; border: 1px solid var(--line); border-radius: 4px; }
+nav a:hover, nav a:focus-visible { border-color: var(--brass); outline: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+.chip { font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 1px 7px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; }
+.keep { color: var(--keep); } .rework { color: var(--rework); } .mine { color: var(--mine); } .eng { color: var(--eng); } .warn { color: var(--warn); }
+.box { display: grid; gap: 10px; padding: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+.box h2 { font-size: 18px; }
+.box ul, .box ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.branch { display: grid; gap: 12px; scroll-margin-top: 12px; }
+.branch-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.branch-head .was { color: var(--muted); font-size: 14px; }
+.stage { display: grid; grid-template-columns: 34px 1fr; gap: 10px; }
+.tier { font: 13px var(--mono); color: var(--muted); padding-top: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.col { display: grid; gap: 6px; min-width: 0; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; min-width: 0; }
+.node { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--keep); border-radius: 4px; padding: 10px 12px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.node.s-rework { border-left-color: var(--rework); }
+.node .top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; align-items: baseline; }
+.node .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.node b { font-family: var(--display); font-weight: 500; font-size: 16px; letter-spacing: .02em; }
+.node .d { font-size: 14px; }
+.node .was, .node .r { font-size: 12.5px; color: var(--muted); }
+.node .r { font-family: var(--mono); }
+.node .r::before { content: "рецепты: "; color: var(--brass); }
+.bal { font-size: 13px; color: var(--warn); padding-left: 2px; }
+.fix { font-size: 12.5px; color: var(--brass); }
+.fix::before { content: "цифры: "; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.bal::before { content: "баланс: "; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.qs { border-color: var(--brass); }
+.foot { font-size: 13px; color: var(--muted); }
+@media (max-width: 520px) { .stage { grid-template-columns: 1fr; gap: 4px; } .tier { text-align: left; padding-top: 0; } }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow">Baroverhaul · роль 3 из 6 · версия 3 · принято · в сборке, в игре не проверено</div>
+    <a class="back" href="../#talents">← к гайду</a>
+    <h1>Таланты инженера</h1>
+    <p>Одна ветка специализации на выбор; на каждом ярусе берётся один талант. Слева — номер яруса.</p>
+    <p class="lead">Ветки специализации — одна на выбор, на каждом ярусе берётся один узел. Слева номер яруса. Правило баланса: на одном ярусе нет очевидного выбора. Сделано по образцу капитана: название узла говорит, что он делает, название ветки — какие в ней усиления.</p>
+    <nav><a href="#weaponsengineer">Свой арсенал</a><a href="#electrician">Ток и реактор</a><a href="#physicist">Лом и физика</a><a href="#inventor">Гаджеты и огонь</a><a href="#team">Команда</a><a href="#questions">Решения</a></nav>
+    <div class="legend">
+      <span><span class="chip keep">оставить</span> как есть</span>
+      <span><span class="chip rework">изменить</span> полная переработка</span>
+      <span><span class="chip mine">предложение</span> придумал я, ждёт твоего ок</span>
+      <span><span class="chip eng">движок</span> нужна правка нашего движка</span>
+      <span><span style="color:var(--brass)">цифры:</span> что поменял в числах и почему</span>
+    </div>
+  </header>
+
+  <div id="branches" style="display:grid;gap:36px"></div>
+
+  <section class="box" id="team">
+    <h2>Как бонусы складываются в команде</h2>
+    <ul>
+      <li>Сделано в движке (клиент и сервер собраны, не установлены): все проценты складываются с убывающей отдачей. До порога бонус считается как есть, поэтому одиночный узел даёт ровно свои цифры. Выше порога каждый следующий процент даёт всё меньше, а потолок недостижим.</li>
+      <li>Защита от урона: порог 25%, потолок 60%. Сумма 40% даёт 37%, 60% — 47%, 100% — 56%. Броня считается отдельно, лекарство с полной защитой работает как раньше. Исправлена ошибка: два таланта с защитой от одного и того же больше не делают вас слабее.</li>
+      <li>Деньги за миссии (весь экипаж вместе): порог 20%, потолок 60%. Сумма 50% даёт 41%, 100% — 55%. Марки в узлах заменены процентами: за тип миссии 10%, за все миссии 5%, у капитана 10%.</li>
+      <li>Скидки в магазине, на верфи и при найме теперь складываются по всему экипажу: порог 15%, потолок 40%. Скидки 20% + 20% + 10% дают 34%.</li>
+      <li>Скорость ходьбы и плавания, скорострельность: порог 20%, потолок 50%. Сумма 60% даёт 42%. Урон: порог 25%, потолок 75%. Здоровье: порог 20%, потолок 50%. Ремонт, разбор, сила лекарств: порог 25%, потолок 75%. Опыт, рост навыков, длительность усилений: порог 30%, потолок 100%.</li>
+      <li>Качество предметов: таланты и удачные броски поднимают качество максимум до мастерского (3). Легендарное (4) — только с навыком 150, мифическое (5) — только с навыком 215. Правка в моде Quality Expansion. У охранника убран один из трёх узлов «+1 к качеству оружия».</li>
+    </ul>
+  </section>
+  <section class="box qs" id="questions">
+    <h2>Решения по вопросам</h2>
+    <ol>
+      <li>«Оружие со скидкой» — 15%: скидки теперь складываются по экипажу, 20% на патроны подрезало бы крафт.</li>
+      <li>«Универсал» ослаблен до +10, теперь он наравне с «Быстро учусь».</li>
+    </ol>
+  </section>
+
+</div>
+
+<script>
+const K = "keep", R = "rework";
+const branches = [
+  { id: "weaponsengineer", name: "Свой арсенал", was: "было: Инженер-оружейник",
+    note: "Инженер, который сам делает патроны и снаряды — урановые, огненные, электрические. На ярусах выбор: стрелять самому или снабжать турели.",
+    stages: [
+      { o: [{ id: "aggressiveengineering", n: "Боевая сборка", was: "Агрессивная инженерия", s: K, d: "Оружие, которое вы создаёте, выходит на 1 качество выше. Задания на опыт: сделать обеднённое топливо (+100), убить чудовище (+200), сделать патроны (+300); за каждое +5 к навыку." }] },
+      { o: [{ id: "surplussupplies", n: "Армейский ящик", was: "Излишки припасов", s: K, d: "За каждую миссию — ящик армейских излишков." },
+            { id: "gunrunner", n: "Оружие со скидкой", was: "Торговец оружием", s: R, eng: 1, d: "Оружие и патроны в магазинах на 15% дешевле для всего экипажа. Грузовые миссии: +10% денег.", fix: "скидка 20% → 15%: патроны — главный постоянный расход, а цены оружия считаются от стоимости крафта. деньги 15% → 10%: деньги за миссии складываются по всему экипажу. было −10% на всё: скидка на оружие ближе к теме ветки, поэтому больше." }],
+        bal: "Бесплатный ящик каждый рейс или дешёвый арсенал для всех." },
+      { o: [{ id: "runandgunner", n: "Стреляй и беги", s: K, d: "+10% к скорости ходьбы, с оружием наготове ещё +15%." },
+            { id: "topbrass", n: "Лишняя пачка", was: "Латунная элита", s: R, d: "Создавая патроны, 25% шанс получить вдвое больше.", fix: "было: 35% не потратить медь или цинк — почти незаметно." }],
+        bal: "Подвижность в бою или больше патронов с того же сырья." },
+      { o: [{ id: "heavyhitter", n: "Крепкий кулак", s: K, d: "+10% урона в ближнем бою.", r: "закалённые ключ, отвёртка, лом и нож" },
+            { id: "armsrace", n: "Гонка вооружений", s: K, d: "+10% урона из ручного огнестрела.", r: "патроны с обеднённым топливом к пистолету, револьверу, винтовке, ПП и дробовику" }],
+        bal: "Ближний бой или стрельба." },
+      { o: [{ id: "militaryapplications", n: "Урановые снаряды", was: "Военное применение", s: K, d: "+10 к Оружию.", r: "снаряды с обеднённым топливом для пулемёта, зенитки, рейлгана, гаусса и других турелей" },
+            { id: "radpower", n: "Радиоактивные заряды", was: "Радиоактивная мощь", s: K, d: "+10 к Электрике.", r: "радиоактивные заряды для койлгана, гаусса, импульсного лазера и паровой пушки" }],
+        bal: "Разные турели: выбирайте под оружие своей лодки." },
+      { o: [{ id: "pyromaniac", n: "Всё в огне", was: "Пироманьяк", s: K, d: "Ваши ожоги на 25% сильнее. +50% урона по балластной флоре.", r: "огнемёт, зажигательные снаряды" },
+            { id: "shockvalue", n: "Электрошок", was: "Шокирующаяя ценность", s: K, d: "Ваш электрический урон на 50% сильнее.", r: "грозовиевые патроны ко всему ручному оружию" }],
+        bal: "Огонь против живых, ток против машин и толпы." },
+      { o: [{ id: "nuclearoption", n: "Ядерный аргумент", was: "Крайняя мера", s: K, d: "+15% сопротивления радиации.", r: "ядерный пистолет, ядерные снаряды, ядерные глубинные бомбы и приманки, ядерные ракеты РСЗО" }] }
+    ] },
+  { id: "electrician", name: "Ток и реактор", was: "было: Электрик",
+    note: "Проводка, батареи и реактор. На ярусах выбор: чинить быстрее или выжать больше из машин.",
+    stages: [
+      { o: [{ id: "grounded", n: "Заземление", s: K, d: "+20% сопротивления ожогам. Отвёрткой бьёте втрое сильнее. Задания на опыт: починить распределительный щит (+100), сделать провод (+200), сделать батарею (+300); за каждое +5 к Электрике." }] },
+      { o: [{ id: "stationengineer", n: "Смотритель маяков", was: "Инженер станции", s: R, d: "Миссии на маяках: +20% денег. На маяке: +50% к скорости ремонта.", fix: "деньги 30% → 20%: деньги за миссии складываются по всему экипажу." },
+            { id: "junctionjunkie", n: "Электрик на подработке", was: "Фанат соединений", s: R, d: "Починили за рейс 3 электроприбора — +3% денег за миссии этого рейса.", fix: "было +200 марок — заменил процентом." }],
+        bal: "Маяки или деньги в любом рейсе." },
+      { o: [{ id: "intheflow", n: "Раж ремонта", was: "В потоке", s: K, d: "После каждой починки 7 с чините на 70% быстрее." },
+            { id: "betterthannew", n: "Лучше нового", s: K, d: "Починенные вами электроприборы изнашиваются на 30% медленнее." }],
+        bal: "Чинить быстрее или реже." },
+      { o: [{ id: "gridmaintainer", n: "Ремонт сетей", s: R, d: "+30% к скорости ремонта.", r: "ручной монитор электросети", fix: "50% → 30%: с этим узлом соседа никто не брал." },
+            { id: "unlimitedpower", n: "Ёмкие батареи", was: "Безграничная сила", s: R, d: "Батареи и суперконденсаторы лодки держат на 25% больше заряда. Ваши переносные батареи на 1 качество выше.", fix: "10% → 25%: проигрывало «Ремонту сетей»." }],
+        bal: "Скорость ремонта или запас энергии на бой и тишину." },
+      { o: [{ id: "badohmen", n: "Шоковая терапия", was: "Плохая примета", s: K, d: "Оглушение и ЭМИ по врагам на 20% сильнее." },
+            { id: "faradaycage", n: "Клетка Фарадея", s: K, d: "Вас почти не оглушает: +70% сопротивления оглушению." }],
+        bal: "Оглушать или не поддаваться оглушению." },
+      { o: [{ id: "cruising", n: "Экономный реактор", was: "Давилка", s: K, d: "Реактор тратит на 20% меньше топлива.", r: "переносной распределительный щит" },
+            { id: "buzzing", n: "Реактор на пределе", was: "Жужжалка", s: R, d: "Реактор выдаёт на 15% больше мощности.", r: "переносная батарея", fix: "10% → 15%: экономия топлива была выгоднее." }],
+        bal: "Дольше на одном стержне или больше энергии турелям." },
+      { o: [{ id: "lightningwizard", n: "Удар током", was: "Электромаг", s: K, d: "Пока заряжен щит: удары в ближнем бою по вам слабее на 80%, а напавшего бьёт током и оглушает на 4 с. Каждый удар тратит заряд, щит восстанавливается сам." }] }
+    ] },
+  { id: "physicist", name: "Лом и физика", was: "было: Физик",
+    note: "Учёный с монтировкой: радиация, гитара и ближний бой. На ярусах выбор: бить или поддерживать.",
+    stages: [
+      { o: [{ id: "funwithfission", n: "Монтировка учёного", was: "Веселое расщепление", s: K, d: "Ломом бьёте вдвое сильнее, двери вскрываете вдвое быстрее. Ваши топливные стержни на 1 качество выше. Задания на опыт: сделать лом (+100) и др.; за каждое +5 к навыку." }] },
+      { o: [{ id: "unstoppablecuriosity", n: "Новые места — новые знания", was: "Неуемное любопытство", s: K, d: "Каждое открытое место на карте: +4 к случайному навыку." },
+            { id: "expandedresearch", n: "Топливо за отчёт", was: "Расширенные исследования", s: K, d: "После каждой миссии следующий сделанный вами топливный стержень выходит двойным и даёт +2 к Электрике." }],
+        bal: "Навыки за путешествия или топливо и Электрика за миссии." },
+      { o: [{ id: "theuniverseissinging", n: "Боевая песня", was: "Вселенная поёт", s: K, d: "Играйте на гитаре до полного заряда — все рядом на 8 минут получают +10% урона." },
+            { id: "whatisthatmelody", n: "Рабочая песня", was: "Что это за мелодия?", s: R, d: "Играйте на гитаре до полного заряда — все рядом на 8 минут чинят на 25% быстрее и ходят на 10% быстрее. Ускорение от разных песен не складывается — действует одно.", fix: "песни трёх ролей больше не складывают скорость." }],
+        bal: "Песня перед боем или перед ремонтом." },
+      { o: [{ id: "dangerzone", n: "Свинцовый карман", was: "Опасная зона", s: K, d: "С защищённым от радиации предметом в инвентаре лучевая болезнь вдвое слабее.", r: "нестабильный грозовиевый стержень" },
+            { id: "playingwithgeiger", n: "Радиация лечит", was: "Игра с Гейгером", s: K, d: "Лучевая болезнь вас не мучает. Пока вы облучены, медленно заживают раны, ожоги и кровотечения.", r: "радиоактивный материал" }],
+        bal: "Защититься от радиации или жить с ней и лечиться." },
+      { o: [{ id: "masstimesacceleration", n: "Тяжёлый удар", was: "Масса на ускорение", s: K, d: "+20% урона в ближнем бою." },
+            { id: "deltavoverdeltat", n: "Частые удары", was: "Дельта V на Дельта T", s: R, d: "Удары на 15% чаще, двигаетесь на 10% быстрее.", fix: "+10% и +5% → +15% и +10%: проигрывало «Тяжёлому удару»." }],
+        bal: "Сила или скорость." },
+      { o: [{ id: "equalandoppositereaction", n: "Отталкивающий выстрел", was: "Равная и противоположная реакция", s: K, d: "Накопив заряд, следующий выстрел из ручного оружия отбрасывает всё вокруг цели." },
+            { id: "barrierinitialized", n: "Барьер", was: "Барьер инициализирован", s: K, d: "+15% сопротивления огнестрельным ранам.", r: "экспериментальный метательный барьер" }],
+        bal: "Контроль толпы или защита от пуль." },
+      { o: [{ id: "phdinnuclearphysics", n: "Доктор с монтировкой", was: "Кандидат наук по ядерной физике", s: K, d: "Ломом бьёте втрое сильнее.", r: "костюм PUCS, гравипушка, гравитационный колодец" }] }
+    ] },
+  { id: "inventor", name: "Гаджеты и огонь", was: "было: Изобретатель",
+    note: "Схемы, гаджеты, огнемёты и взрывы. На ярусах выбор: полезная техника или оружие.",
+    stages: [
+      { o: [{ id: "submarineofthings", n: "Схемотехник", was: "Подлодка вещей", s: K, d: "Задания на опыт: сделать инструмент (+100), схему ПЛИС (+200), коробку схем (+300); за каждое +5 к навыку.", r: "схема ПЛИС, коробка схем" }] },
+      { o: [{ id: "egghead", n: "Быстро учусь", was: "Яйцеголовый", s: K, d: "Все навыки растут на 50% быстрее." },
+            { id: "polymath", n: "Универсал", s: R, d: "Бонусы ко всем навыкам дотягиваются до +10.", fix: "+15 → +10: был сильнее соседа «Быстро учусь»." }],
+        bal: "Расти быстрее или сразу уметь всё понемногу." },
+      { o: [{ id: "remotemonitor", n: "Пульт реактора", was: "Монитор наблюдения", s: K, d: "+20% сопротивления ожогам и радиации.", r: "КПК реактора" },
+            { id: "distressbeacon", n: "Аварийный маяк", s: K, d: "+20% сопротивления кровотечению.", r: "аварийная гарнитура" }],
+        bal: "Работа у реактора или вылазки, где легко порезаться." },
+      { o: [{ id: "samplecollection", n: "Грузовой скутер", was: "Коллекция образцов", s: R, d: "+20% к скорости плавания.", r: "грузовой скутер", fix: "10% → 20%: проигрывало ложковилке." },
+            { id: "holdsupspork", n: "Ложковилка", was: "Подежи мою ложковилку", s: K, d: "+25% к скорости ремонта.", r: "ключ-отвёртка" }],
+        bal: "Работа снаружи или ремонт внутри." },
+      { o: [{ id: "valvecorporation", n: "Огнемёт мечты", was: "Корпорация Valve", s: K, d: "Ваши ожоги на 10% сильнее, снаружи лодки — на 20%.", r: "особый огнемёт" },
+            { id: "sayitdontsprayit", n: "Радиомёт", was: "Скажи, не распыляй", s: K, d: "Ваша радиация на 15% сильнее.", r: "радиомёт" }],
+        bal: "Огонь или радиация." },
+      { o: [{ id: "ticktickboom", n: "Тик-тик-бум", was: "Тик-тик бум", s: R, d: "Взрывы на 15% мощнее и шире.", r: "ракетомёт с делящимся зарядом", fix: "10% → 15%: проигрывало «Вооружён до зубов»." },
+            { id: "packingheat", n: "Вооружён до зубов", s: K, d: "Ваши ожоги и радиация на 10% сильнее.", r: "пистолет с делящимся зарядом" }],
+        bal: "Взрывчатка или огонь с радиацией." },
+      { o: [{ id: "vegetabledefense", n: "Картофельная оборона", was: "Оборона овощей", s: R, d: "Весь экипаж: +5% сопротивления урону, ожоги и радиация на 15% слабее.", r: "картофелемёт", fix: "защита на весь экипаж складывается со всеми остальными источниками, поэтому снова 5%, зато добавлены ожоги и радиация. Ранее: 5% → 10%: финал ветки был заметно слабее других." }] }
+    ] }
+];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const node = o => `<div class="node s-${o.s}">
+  <div class="top"><b>${esc(o.n)}</b><span class="tags">
+    <span class="chip ${o.s}">${o.s === K ? "оставить" : "изменить"}</span>
+    ${o.mine ? '<span class="chip mine">предложение</span>' : ""}
+    ${o.eng ? '<span class="chip eng">движок</span>' : ""}</span></div>
+  <div class="d">${esc(o.d)}</div>
+  ${o.was ? `<div class="was">было: ${esc(o.was)}</div>` : ""}
+  ${o.fix ? `<div class="fix">${esc(o.fix)}</div>` : ""}
+  ${o.r ? `<div class="r">${esc(o.r)}</div>` : ""}
+</div>`;
+document.getElementById("branches").innerHTML = branches.map(b => `
+  <section class="branch" id="${b.id}">
+    <div class="branch-head"><h2>${esc(b.name)}</h2>${b.was ? `<span class="was">${esc(b.was)}</span>` : ""}</div>
+    <p class="lead">${esc(b.note)}</p>
+    ${b.stages.map((st, i) => `
+      <div class="stage"><div class="tier">${i + 1}</div><div class="col">
+        <div class="opts">${st.o.map(node).join("")}</div>
+        ${st.bal ? `<div class="bal">${esc(st.bal)}</div>` : ""}
+      </div></div>`).join("")}
+  </section>`).join("");
+</script>
+<style>
+.eyebrow, .legend, .chip, .was, .fix, .r, #questions, #team, header .lead,
+nav a[href="#questions"], nav a[href="#team"] { display: none !important; }
+.bal::before { content: "выбор: " !important; }
+.back { font-size: 15px; }
+</style></body></html>
