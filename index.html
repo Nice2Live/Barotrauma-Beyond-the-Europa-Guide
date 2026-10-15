@@ -94,6 +94,10 @@ details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
 .morebtn { display: block; margin: 16px auto; font: inherit; padding: 9px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
 .morebtn[hidden] { display: none; }
 .dim { color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 0 18px; margin-top: 4px; font-size: 14px; }
+.stats > div { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.stats i { font-style: normal; color: var(--muted); }
+.stats b { font-weight: 600; }
 .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin: 12px 0 4px; font-size: 15px; }
 .legend .card { padding: 10px 12px; }
 .legend b { display: block; margin-bottom: 4px; }
@@ -181,11 +185,12 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 <section id="armor">
   <h2>Броня</h2>
-  <p>Шкалы показывают, сколько урона каждого типа снимает предмет: голова и тело считаются вместе, взята лучшая защита. Эффекты защиты от разных предметов складываются с убывающей отдачей (см. «Механики»).</p>
+  <p>Плашка зоны — с какой зоны броню можно купить или скрафтить; сильную броню модов сборка переносит в поздние зоны, а позднюю (с Плато) крафтят только по чертежу. «Только находки» — её не продают и не крафтят, только находят, снимают с врагов или выдают профессии. Шкалы показывают, сколько урона каждого типа снимает предмет: голова и тело считаются вместе, взята лучшая защита. Эффекты защиты от разных предметов складываются с убывающей отдачей (см. «Механики»).</p>
   <div class="tools">
     <input id="r-q" type="search" placeholder="Поиск по названию или моду">
+    <div class="chips" id="r-zone"></div>
     <div class="chips" id="r-slot"></div>
-    <select id="r-sort"><option value="sum">Сначала самые защищающие</option><option value="name">По названию</option><option value="press">Защита от давления</option></select>
+    <select id="r-sort"><option value="sum">Сначала самые защищающие</option><option value="zone">По зоне</option><option value="name">По названию</option><option value="press">Защита от давления</option></select>
     <span class="count" id="r-count"></span>
   </div>
   <div class="grid" id="r-list"></div>
@@ -324,7 +329,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="8e548a9891"</script><script src="data.js?v=8e548a9891"></script>
+<script>window.GUIDE_V="b2897d0000"</script><script src="data.js?v=b2897d0000"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -380,6 +385,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     const c = g[0] === 0 && !invert ? "g0" : "g" + Math.max(1, Math.round(pos * 4));
     return `<span class="gd" style="background:var(--${c})"></span>${esc(g[1])}`;
   }
+  const lvlRange = ([a, b]) => a === b ? `«${esc(ZSHORT[b - 1] || "")}»` : `«${esc(ZSHORT[a - 1] || "")}» – «${esc(ZSHORT[b - 1] || "")}»`;
   const zoneBadge = (lvl) => `<span class="b zb z${lvl}">${ZSHORT[lvl - 1]}</span>`;
   const img = (f) => f ? `<img loading="lazy" src="icons/${esc(f)}" alt="">` : "";
 
@@ -453,9 +459,10 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     },
     card: (g) => `<div class="item"><div class="ic">${img(g.icon)}</div>
       <div class="nm">${esc(g.name)}</div><div class="md">${esc(g.type)} · ${esc(g.mod)}</div>
-      <div class="badges">${zoneBadge(open(g.zone))}${g.dps ? `<span class="b"><i>урон/с</i> <b>${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</b></span>` : ""}<span class="b"><i>темп</i> ${dot("rate", g.rate)}</span><span class="b"><i>пробитие</i> ${dot("pen", g.pen)}</span>
-        <span class="b"><i>оглушение</i> ${dot("stun", g.stun)}</span><span class="b"><i>стрельба</i> ${dot("cost", g.cost, true)}</span></div>
-      <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")} · урон уровня «${esc(ZSHORT[g.lvl - 1] || "")}»</div>
+      <div class="badges">${zoneBadge(open(g.zone))}${g.dps ? `<span class="b"><i>урон/с</i> <b>${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</b></span>` : ""}</div>
+      <div class="stats full"><div><i>темп</i><b>${dot("rate", g.rate)}</b></div><div><i>пробитие</i><b>${dot("pen", g.pen)}</b></div>
+        <div><i>оглушение</i><b>${dot("stun", g.stun)}</b></div><div><i>стрельба</i><b>${dot("cost", g.cost, true)}</b></div></div>
+      <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")} · урон уровня ${lvlRange(g.lvls || [g.lvl, g.lvl])}</div>
       <details class="more"><summary>Патроны (${g.pairs.length})</summary><div class="pairs">${g.pairs.map((p) => {
         const a = ammoById[p.ammo] || { name: p.ammo };
         return `<div class="pair"><span class="an">${esc(a.name)}</span>${zoneBadge(open(a.zone))}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span><i>проб.</i> ${dot("pen", p.pen)}</span><span><i>оглуш.</i> ${dot("stun", p.stun)}</span><span><i>стрельба</i> ${dot("cost", p.cost, true)}</span><span class="ways">${esc(p.ways.join(", "))}</span></div>`;
@@ -497,19 +504,20 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   const SLOT = { head: "Голова", outer: "Верхняя одежда", inner: "Нижняя одежда", other: "Другое" };
   const DMG = ["огнестрел", "порезы", "укусы", "удары", "взрывы", "ожоги"];
   const protSum = (r) => Object.values(r.prot).reduce((s, g) => s + g[0], 0);
-  let rs;
+  let rs, rz;
   const drawArmor = list({
     rows: () => G.armor.slice(), count: "#r-count", list: "#r-list", more: "#r-more", inputs: ["#r-q", "#r-sort"],
-    filter: (r) => (!q("#r-q") || (r.name + " " + r.mod).toLowerCase().includes(q("#r-q"))) && (!rs || !rs.size || rs.has(r.slot)),
+    filter: (r) => (!q("#r-q") || (r.name + " " + r.mod).toLowerCase().includes(q("#r-q"))) && (!rs || !rs.size || rs.has(r.slot)) && (!rz || !rz.size || (r.zone && rz.has(String(open(r.zone))))),
     sort: (a, b) => {
       const s = $("#r-sort").value;
       if (s === "name") return a.name.localeCompare(b.name, "ru");
       if (s === "press") return b.pressure - a.pressure || protSum(b) - protSum(a);
+      if (s === "zone") return (a.zone ? open(a.zone) : 9) - (b.zone ? open(b.zone) : 9) || protSum(b) - protSum(a);
       return protSum(b) - protSum(a) || a.name.localeCompare(b.name, "ru");
     },
     card: (r) => `<div class="item"><div class="ic">${img(r.icon)}</div>
       <div class="nm">${esc(r.name)}</div><div class="md">${esc(SLOT[r.slot] || r.slot)} · ${esc(r.mod)}</div>
-      <div class="badges">${r.pressure ? `<span class="b"><i>давление</i> до ~${r.pressure} м</span>` : ""}</div>
+      <div class="badges">${r.zone ? zoneBadge(open(r.zone)) : '<span class="b"><i>только находки</i></span>'}${r.pressure ? `<span class="b"><i>давление</i> до ~${r.pressure} м</span>` : ""}</div>
       <div class="bars">${DMG.filter((d) => r.prot[d]).map((d) => {
         const g = r.prot[d];
         return `<span>${d}</span><span class="bar">${[1, 2, 3, 4].map((i) => `<span class="${g[0] >= i ? "f" : ""}"></span>`).join("")}<em>${esc(g[1])}</em></span>`;
@@ -517,6 +525,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       <div class="ways full">Где взять: ${esc(r.ways.join(", ") || "—")}</div></div>`,
   });
   rs = chips("#r-slot", Object.entries(SLOT), true, () => drawArmor(true));
+  rz = chips("#r-zone", zoneChips, true, () => drawArmor(true));
   drawArmor(true);
 
   // zones + creatures
