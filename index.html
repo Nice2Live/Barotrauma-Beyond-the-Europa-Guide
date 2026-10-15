@@ -94,6 +94,18 @@ details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
 .morebtn { display: block; margin: 16px auto; font: inherit; padding: 9px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
 .morebtn[hidden] { display: none; }
 .dim { color: var(--muted); }
+.trees { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); align-items: start; }
+.tree .tt { font-weight: 700; margin-bottom: 6px; }
+.tree .tt span { color: var(--muted); font-weight: 400; font-size: 14px; }
+.tr, .tr ul { list-style: none; margin: 0; padding: 0; }
+.tr ul { margin-left: 8px; padding-left: 9px; border-left: 2px solid var(--line); }
+.tr li { margin: 6px 0; }
+.bn { display: grid; grid-template-columns: 34px 1fr; gap: 2px 8px; align-items: center; }
+.bn .ic2 { width: 34px; height: 34px; display: grid; place-items: center; background: var(--panel2); border-radius: 6px; grid-row: span 2; }
+.bn .ic2 img { max-width: 30px; max-height: 30px; }
+.bn .n { font-weight: 600; line-height: 1.25; }
+.bn .m { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.bn .ways { grid-column: 2; font-size: 13.5px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 0 18px; margin-top: 4px; font-size: 14px; }
 .stats > div { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .stats i { font-style: normal; color: var(--muted); }
@@ -126,7 +138,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   <h1>Barotrauma: Beyond the Europa</h1>
   <p class="tagline">Гайд по кооперативной сборке: снаряжение, зоны, подлодки и механики</p>
   <nav id="nav">
-    <a href="#start">Начало</a><a href="#guns">Оружие</a><a href="#ammo">Патроны</a><a href="#armor">Броня</a>
+    <a href="#start">Начало</a><a href="#guns">Оружие</a><a href="#branches">Ветки</a><a href="#ammo">Патроны</a><a href="#armor">Броня</a>
     <a href="#zones">Зоны и монстры</a><a href="#subs">Подлодки</a><a href="#mech">Механики</a><a href="#med">Медицина</a>
     <a href="#talents">Таланты</a><a href="#world">Мир</a><a href="#mods">Моды</a>
   </nav>
@@ -168,6 +180,16 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   </div>
   <div class="grid" id="g-list"></div>
   <button class="morebtn" id="g-more" type="button">Загрузка…</button>
+</section>
+
+<section id="branches">
+  <h2>Ветки оружия</h2>
+  <p>Часть оружия собирается из другого: ствол кладут в фабрикатор вместе с деталями и получают улучшенную модель, а её — в следующую. Ветка начинается с самой простой модели; у каждой ступени указана зона, с которой её можно достать, и что ещё нужно для сборки.</p>
+  <div class="tools">
+    <input id="b-q" type="search" placeholder="Поиск по названию оружия">
+    <span class="count" id="b-count"></span>
+  </div>
+  <div class="trees" id="b-list"></div>
 </section>
 
 <section id="ammo">
@@ -329,7 +351,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="cf22805e98"</script><script src="data.js?v=cf22805e98"></script>
+<script>window.GUIDE_V="5412263aec"</script><script src="data.js?v=5412263aec"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -385,6 +407,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
     const c = g[0] === 0 && !invert ? "g0" : "g" + Math.max(1, Math.round(pos * 4));
     return `<span class="gd" style="background:var(--${c})"></span>${esc(g[1])}`;
   }
+  const gname = (id) => (G.guns.find((g) => g.id === id) || { name: id }).name;
   const lvlRange = ([a, b]) => a === b ? `«${esc(ZSHORT[b - 1] || "")}»` : `«${esc(ZSHORT[a - 1] || "")}» – «${esc(ZSHORT[b - 1] || "")}»`;
   const zoneBadge = (lvl) => `<span class="b zb z${lvl}">${ZSHORT[lvl - 1]}</span>`;
   const img = (f) => f ? `<img loading="lazy" src="icons/${esc(f)}" alt="">` : "";
@@ -463,6 +486,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
       <div class="stats full"><div><i>темп</i><b>${dot("rate", g.rate)}</b></div><div><i>пробитие</i><b>${dot("pen", g.pen)}</b></div>
         <div><i>оглушение</i><b>${dot("stun", g.stun)}</b></div><div><i>стрельба</i><b>${dot("cost", g.cost, true)}</b></div></div>
       <div class="ways full">Где взять: ${esc(g.ways.join(", ") || "—")} · урон уровня ${lvlRange(g.lvls || [g.lvl, g.lvl])}</div>
+      ${g.from || g.up ? `<div class="ways full">Ветка: ${g.from ? "собирается из " + esc(g.from.map(gname).join(", ")) : ""}${g.from && g.up ? "; " : ""}${g.up ? "улучшается в " + esc(g.up.map(gname).join(", ")) : ""}</div>` : ""}
       <details class="more"><summary>Патроны (${g.pairs.length})</summary><div class="pairs">${g.pairs.map((p) => {
         const a = ammoById[p.ammo] || { name: p.ammo };
         return `<div class="pair"><span class="an">${esc(a.name)}</span>${zoneBadge(open(a.zone))}${p.dmg ? `<span><i>урон</i> <b>${p.dmg}</b>${p.dps ? ` <span class="dim">(${p.dps}/с)</span>` : ""}</span>` : ""}<span><i>проб.</i> ${dot("pen", p.pen)}</span><span><i>оглуш.</i> ${dot("stun", p.stun)}</span><span><i>стрельба</i> ${dot("cost", p.cost, true)}</span><span class="ways">${esc(p.ways.join(", "))}</span></div>`;
@@ -473,6 +497,52 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
   // ammo
   const gunById = Object.fromEntries(G.guns.map((g) => [g.id, g]));
+
+  // upgrade branches: connected groups of guns made from one another
+  const branches = (() => {
+    const nodes = G.guns.filter((g) => g.up || g.from), comp = new Map(), out = [];
+    const near = (g) => [...(g.up || []), ...(g.from || [])].filter((i) => gunById[i]);
+    const zl = (g) => open(g.zone);
+    const byZone = (a, b) => zl(a) - zl(b) || (a.pw || 0) - (b.pw || 0) || a.name.localeCompare(b.name, "ru");
+    for (const g of nodes) {
+      if (comp.has(g.id)) continue;
+      const members = [], st = [g.id];
+      comp.set(g.id, out.length);
+      while (st.length) {
+        const x = gunById[st.pop()]; members.push(x);
+        for (const y of near(x)) if (!comp.has(y)) { comp.set(y, out.length); st.push(y); }
+      }
+      let roots = members.filter((m) => !(m.from || []).some((i) => gunById[i])).sort(byZone);
+      if (!roots.length) roots = members.slice().sort(byZone).slice(0, 1);
+      const seen = new Set();
+      let depth = 0;
+      const walk = (x, d) => {
+        seen.add(x.id); depth = Math.max(depth, d);
+        const kids = (x.up || []).map((i) => gunById[i]).filter((k) => k && !seen.has(k.id)).sort(byZone);
+        kids.forEach((k) => seen.add(k.id));
+        return { g: x, kids: kids.map((k) => walk(k, d + 1)) };
+      };
+      const trees = roots.filter((r) => !seen.has(r.id)).map((r) => walk(r, 1));
+      out.push({ trees, members, depth, text: members.map((m) => m.name + " " + m.mod).join(" ").toLowerCase() });
+    }
+    return out.sort((a, b) => b.depth - a.depth || b.members.length - a.members.length);
+  })();
+  const node = (t) => {
+    const g = t.g, also = (g.from || []).length > 1 ? `из ${g.from.map(gname).join(" + ")}` : "";
+    const ways = [also, g.need && g.need.length ? "+ " + g.need.join(", ") : ""].filter(Boolean).join(" · ");
+    return `<li><div class="bn"><div class="ic2">${img(g.icon)}</div><div class="n">${esc(g.name)}</div>
+      <div class="m">${zoneBadge(open(g.zone))}<span>${esc(g.type)}</span>${g.dps ? `<span>урон/с ${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</span>` : ""}</div>
+      ${ways ? `<div class="ways">${esc(ways)}</div>` : ""}</div>${t.kids.length ? `<ul>${t.kids.map(node).join("")}</ul>` : ""}</li>`;
+  };
+  function drawBranches() {
+    const s = q("#b-q");
+    const rows = branches.filter((b) => !s || b.text.includes(s));
+    $("#b-count").textContent = rows.length ? rows.length + " веток" : "ничего не найдено";
+    $("#b-list").innerHTML = rows.map((b) => `<div class="card tree"><div class="tt">${esc(b.trees[0].g.name)} <span>· ${b.members.length} шт., ступеней: ${b.depth}</span></div>
+      <ul class="tr">${b.trees.map(node).join("")}</ul></div>`).join("");
+  }
+  $("#b-q").addEventListener("input", drawBranches);
+  drawBranches();
   $("#a-fam").innerHTML += [...new Set(G.ammo.map((a) => a.family))].sort().map((f) => `<option>${esc(f)}</option>`).join("");
   let az;
   const drawAmmo = list({
