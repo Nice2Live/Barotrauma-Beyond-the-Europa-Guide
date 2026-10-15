@@ -105,6 +105,7 @@ details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
 .bn .ic2 img { max-width: 30px; max-height: 30px; }
 .bn .n { font-weight: 600; line-height: 1.25; }
 .bn .m { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.bn .m .conv { color: var(--warn, #d9a441); border: 1px solid currentColor; border-radius: 4px; padding: 0 5px; font-size: 12.5px; }
 .bn .ways { grid-column: 2; font-size: 13.5px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 0 18px; margin-top: 4px; font-size: 14px; }
 .stats > div { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -351,7 +352,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="5412263aec"</script><script src="data.js?v=5412263aec"></script>
+<script>window.GUIDE_V="dd8f845850"</script><script src="data.js?v=dd8f845850"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -520,7 +521,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
         seen.add(x.id); depth = Math.max(depth, d);
         const kids = (x.up || []).map((i) => gunById[i]).filter((k) => k && !seen.has(k.id)).sort(byZone);
         kids.forEach((k) => seen.add(k.id));
-        return { g: x, kids: kids.map((k) => walk(k, d + 1)) };
+        return { g: x, kids: kids.map((k) => ({ ...walk(k, d + 1), p: x })) };
       };
       const trees = roots.filter((r) => !seen.has(r.id)).map((r) => walk(r, 1));
       out.push({ trees, members, depth, text: members.map((m) => m.name + " " + m.mod).join(" ").toLowerCase() });
@@ -529,9 +530,11 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   })();
   const node = (t) => {
     const g = t.g, also = (g.from || []).length > 1 ? `из ${g.from.map(gname).join(" + ")}` : "";
+    // a step into another type, or one far weaker than its source, is a conversion: the branch rule does not apply
+    const conv = t.p && (t.p.type !== g.type || (g.dps && t.p.dps && g.dps[1] < t.p.dps[1] * 0.95));
     const ways = [also, g.need && g.need.length ? "+ " + g.need.join(", ") : ""].filter(Boolean).join(" · ");
     return `<li><div class="bn"><div class="ic2">${img(g.icon)}</div><div class="n">${esc(g.name)}</div>
-      <div class="m">${zoneBadge(open(g.zone))}<span>${esc(g.type)}</span>${g.dps ? `<span>урон/с ${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</span>` : ""}</div>
+      <div class="m">${zoneBadge(open(g.zone))}<span>${esc(g.type)}</span>${conv ? `<span class="conv">переделка</span>` : ""}${g.dps ? `<span>урон/с ${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</span>` : ""}</div>
       ${ways ? `<div class="ways">${esc(ways)}</div>` : ""}</div>${t.kids.length ? `<ul>${t.kids.map(node).join("")}</ul>` : ""}</li>`;
   };
   function drawBranches() {
