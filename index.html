@@ -352,7 +352,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
 
 </main>
 <footer>Barotrauma: Beyond the Europa · гайд генерируется из файлов сборки · <span id="stamp"></span></footer>
-<script>window.GUIDE_V="dd8f845850"</script><script src="data.js?v=dd8f845850"></script>
+<script>window.GUIDE_V="0c83e22cb2"</script><script src="data.js?v=0c83e22cb2"></script>
 <script>
 // a newer guide is out but the browser still holds this page (GitHub Pages caches 10 min): refresh it once
 (function () {
@@ -531,7 +531,7 @@ footer { color: var(--muted); font-size: 14px; text-align: center; padding: 24px
   const node = (t) => {
     const g = t.g, also = (g.from || []).length > 1 ? `из ${g.from.map(gname).join(" + ")}` : "";
     // a step into another type, or one far weaker than its source, is a conversion: the branch rule does not apply
-    const conv = t.p && (t.p.type !== g.type || (g.dps && t.p.dps && g.dps[1] < t.p.dps[1] * 0.95));
+    const conv = t.p && (t.p.type !== g.type || (g.bx && t.p.bx && g.bx < t.p.bx * 0.95));
     const ways = [also, g.need && g.need.length ? "+ " + g.need.join(", ") : ""].filter(Boolean).join(" · ");
     return `<li><div class="bn"><div class="ic2">${img(g.icon)}</div><div class="n">${esc(g.name)}</div>
       <div class="m">${zoneBadge(open(g.zone))}<span>${esc(g.type)}</span>${conv ? `<span class="conv">переделка</span>` : ""}${g.dps ? `<span>урон/с ${g.dps[0] === g.dps[1] ? g.dps[0] : g.dps[0] + "–" + g.dps[1]}</span>` : ""}</div>
